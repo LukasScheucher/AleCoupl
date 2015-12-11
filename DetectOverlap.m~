@@ -1,0 +1,47 @@
+function overlap = DetectOverlap(ele.nodes)
+
+geo.slave.numeletot
+
+overlap_slave=zeros(geo.slave.numeletot,2);
+overlap_slave(:,1)=1:geo.slave.numeletot;
+
+overlap_master=zeros(geo.master.numeletot,2);
+overlap_master(:,1)=1:geo.master.numeletot;
+
+
+%% determine the overlap for master elements
+for j=1:geo.master.numeletot
+  curele=ele.mbody(i,:)
+  curnodes=nodes.mbody(curele,:)
+  center=sum(curnodes)*0.25;
+  
+  %loop over all slave elements and determine whether the point is inside the element
+  for k=1:geo.slave.numeletot
+     counterele=ele.sbody(i,:);
+     xi= GlobalToLocal( center,nodes );
+     if CheckMapping('quad4',xi)==true
+       
+     end
+  end
+  
+end
+
+
+%% determine the overlap for slave elements
+for j=1:geo.slave.numeletot
+  curele=ele.sbody(i,:)
+  curnodes=nodes.sbody(curele,:)
+  center=sum(curnodes)*0.25;
+  
+  %loop over all slave elements and determine whether the point is inside the element
+  for k=1:geo.slave.numeletot
+     counterele=ele.sbody(i,:);
+     xi= GlobalToLocal( center,nodes );
+     if CheckMapping('quad4',xi)==true
+       
+     end
+  end
+  
+end
+
+end

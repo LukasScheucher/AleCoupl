@@ -1,0 +1,14 @@
+close all
+clear
+clc
+
+setup
+
+%% Determine the overlap
+
+[geo.soverlap,geo.moverlap]=DetectOverlap(ele,nodes,geo)
+
+
+plotOverlap(f_frame,ele,nodes,geo)
+
+
