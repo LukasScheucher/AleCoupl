@@ -19,7 +19,8 @@ for j=1:geo.master.numeletot
   for k=1:geo.slave.numeletot
      counterele=ele.sbody(k,:)
      counternodes=nodes.sbody(counterele,:)
-     xi= GlobalToLocal( center',counternodes );
+     counternodes(:,1:2)
+     xi= GlobalToLocal( center(1:2)',counternodes(:,1:2) );
      if CheckMapping('quad4',xi)==true
        overlap_master(j,2)=k;
      end
@@ -38,7 +39,7 @@ for j=1:geo.slave.numeletot
   for k=1:geo.master.numeletot
      counterele=ele.mbody(k,:);
      counternodes=nodes.mbody(counterele,:)
-     xi= GlobalToLocal( center',counternodes );
+     xi= GlobalToLocal( center(1:2)',counternodes(:,1:2) );
      if CheckMapping('quad4',xi)==true
        overlap_slave(j,2)=k;
      end

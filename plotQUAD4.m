@@ -1,4 +1,4 @@
-function []=plotQUAD4(f,elenodes,numpoints,color,linestyle,linewidth,offset)
+function []=plotQUAD4(f,elenodes,numpoints,color,linestyle,linewidth)
 
 
 
@@ -63,7 +63,7 @@ for k=1:4 %% 4 Kanten
      y(i)=N'*elenodes(:,2);
  end
  
- z=x*0+offset;
+ z=x*0+elenodes(1,3);
  p=plot3(x,y,z);
  set(p,'Color',color,'LineStyle',linestyle,'LineWidth',4);
  clear x y;

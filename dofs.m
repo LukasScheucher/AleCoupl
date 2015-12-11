@@ -1,7 +1,9 @@
-function curdofs=dofs(curnodes)
+function curdofs=dofs(curnodes,offset)
 
 
 curdofs=[];
+
+%offest is used for all slave dofs
 
 
 for i=1:length(curnodes)
