@@ -33,8 +33,8 @@ for j=geo.ilagele'
     Nsmat=[...
            Ns(1) 0     Ns(2) 0     Ns(3) 0     Ns(4) 0
            0     Ns(1) 0     Ns(2) 0     Ns(3) 0     Ns(4)];
-    jac=det(Jacobian(cursnodes(:,1:2),xilag));
-    De=De+Nlmat'*Nsmat*gpw(igp)*inv(jac);  
+    jac=Jacobian(cursnodes(:,1:2),xilag);
+    De=De+(inv(jac)*Nlmat)'*inv(jac)*Nsmat*gpw(igp)*det(jac);  
   end
   
   %% Assemble to total systemmatrix
@@ -75,11 +75,12 @@ for j=geo.ilagele'
   
     Me=zeros(8,8);
     for igp=1:numgp
-      xilag  =gpxi(igp,:);
-      Xglob=LocalToGlobal( xilag,curlnodes(:,1:2) );
-      xicounter=GlobalToLocal( Xglob,curmnodes(:,1:2) );
       
-      if CheckMapping('quad4',xicounter)==0
+      ximaster  =gpxi(igp,:);
+      Xglob=LocalToGlobal( ximaster,curmnodes(:,1:2) );
+      xilag=GlobalToLocal( Xglob,curlnodes(:,1:2) );
+      
+      if CheckMapping('quad4',xilag)==0
 %         j
 %         icurmele
 %         curlele
@@ -93,7 +94,7 @@ for j=geo.ilagele'
       
       
       Nl =sval('quad4',xilag);
-      Nm =sval('quad4',xicounter);
+      Nm =sval('quad4',ximaster);
       T=[4 -2  1 -2
         -2  4 -2  1
          1 -2  4 -2
@@ -108,14 +109,16 @@ for j=geo.ilagele'
       Nmmat=[...
              Nm(1) 0     Nm(2) 0     Nm(3) 0     Nm(4) 0
              0     Nm(1) 0     Nm(2) 0     Nm(3) 0     Nm(4)];
-      jac=det(Jacobian(curlnodes(:,1:2),xilag));
-      Me=Me+Nlmat'*Nmmat*gpw(igp)*inv(jac);  
+      jacl=Jacobian(curlnodes(:,1:2),xilag);
+      jacm=Jacobian(curmnodes(:,1:2),ximaster);
+      jacseg=jacl*inv(jacm)
+      Me=Me+(inv(jacl)*Nlmat)'*inv(jacseg)*Nmmat*gpw(igp)*1/det(jacseg);  
     end%end loop over gausspoints
     M(lcurdofs,mcurdofs)=M(lcurdofs,mcurdofs)+Me;
   end%end loop over corresponding master elements
 end%end loop over lagrange elements
 
-% M=M.*(M>TOL);
+M=M.*(M>TOL);
 
 %this is valid, since all master nodes are part of the coupling zone
 M=M(dofs(geo.ilagnodes,0),1:geo.master.numnodetot*2)
