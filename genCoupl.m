@@ -9,7 +9,7 @@ D=zeros(geo.syssize,geo.syssize);
 M=zeros(geo.syssize,geo.syssize);
 
 %loop over all slave elements
-for j=1:geo.slave.numeletot
+for j=geo.ilagele'
   cursele=ele.sbody(j,:);
   cursnodes=nodes.sbody(cursele,:);
   lcurdofs=dofs(cursele,0); %%TODO offest is missing here
@@ -43,6 +43,7 @@ for j=1:geo.slave.numeletot
 %   cursnodes
 %   cursele
   D(lcurdofs,scurdofs)=D(lcurdofs,scurdofs)+De;
+
   
 end
 
@@ -55,14 +56,13 @@ D=D(dofs(geo.ilagnodes,0),dofs(geo.ilagnodes,0))
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Computation of M Matrix
 
-%loop over all slave elements
+%loop over all lagrange elements
 for j=geo.ilagele'
   
   curlele=ele.sbody(j,:);
-  curlnodes=nodes.sbody(cursele,:);
+  curlnodes=nodes.sbody(curlele,:);
   lcurdofs=dofs(curlele,0);
   
-  ji=j
   allmele=find(geo.mnode2sele(:,2)==j)
 
   for icurmele=allmele' %% loop over all corresponding master elements
@@ -71,23 +71,34 @@ for j=geo.ilagele'
     curmnodes=nodes.mbody(curmele,:)
     mcurdofs=dofs(curmele,0)
   
-    xilag=gpxi(igp,:);
-    Xglob=LocalToGlobal( xilag,curlnodes(:,1:2) );
-    curmnodes
-    xicounter=GlobalToLocal( Xglob,curmnodes(:,1:2) );
-  
+
   
     Me=zeros(8,8);
     for igp=1:numgp
       xilag  =gpxi(igp,:);
-      xislave=gpxi(igp,:);
+      Xglob=LocalToGlobal( xilag,curlnodes(:,1:2) );
+      xicounter=GlobalToLocal( Xglob,curmnodes(:,1:2) );
+      
+      if CheckMapping('quad4',xicounter)==0
+%         j
+%         icurmele
+%         curlele
+%         curlnodes
+%         xilag
+%         Xglob
+%         xicounter
+        %pause(30)
+        continue;
+      end
+      
+      
       Nl =sval('quad4',xilag);
-      Ns =sval('quad4',xislave);
-%       T=[4 -2  1 -2
-%         -2  4 -2  1
-%          1 -2  4 -2
-%         -2  1 -2  4];
-%       Nl=T*Nl; %no dual shapoe function required on master
+      Nm =sval('quad4',xicounter);
+      T=[4 -2  1 -2
+        -2  4 -2  1
+         1 -2  4 -2
+        -2  1 -2  4];
+      Nl=T*Nl; %no dual shapoe function required on master
 
 
 
@@ -95,16 +106,16 @@ for j=geo.ilagele'
              Nl(1) 0     Nl(2) 0     Nl(3) 0     Nl(4) 0
              0     Nl(1) 0     Nl(2) 0     Nl(3) 0     Nl(4)];
       Nmmat=[...
-             Ns(1) 0     Ns(2) 0     Ns(3) 0     Ns(4) 0
-             0     Ns(1) 0     Ns(2) 0     Ns(3) 0     Ns(4)];
-      jac=det(Jacobian(cursnodes(:,1:2),xilag));
+             Nm(1) 0     Nm(2) 0     Nm(3) 0     Nm(4) 0
+             0     Nm(1) 0     Nm(2) 0     Nm(3) 0     Nm(4)];
+      jac=det(Jacobian(curlnodes(:,1:2),xilag));
       Me=Me+Nlmat'*Nmmat*gpw(igp)*inv(jac);  
     end%end loop over gausspoints
     M(lcurdofs,mcurdofs)=M(lcurdofs,mcurdofs)+Me;
   end%end loop over corresponding master elements
 end%end loop over lagrange elements
 
-M=M.*(M>TOL);
+% M=M.*(M>TOL);
 
 %this is valid, since all master nodes are part of the coupling zone
 M=M(dofs(geo.ilagnodes,0),1:geo.master.numnodetot*2)

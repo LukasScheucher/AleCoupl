@@ -1,8 +1,10 @@
-function [ xi ] = GlobalToLocal( X,nodes )
-
+function [ xi,converged ] = GlobalToLocal( X,nodes )
+% xi: local coordinate
+% converged: 1->success else failure
 
 counter=0;
 maxcount=60;
+converged=1;
 
 
 xi=[0.0;0.0]; %Startwert der Iteration
@@ -10,7 +12,7 @@ xi=[0.0;0.0]; %Startwert der Iteration
 
 res=X-LocalToGlobal( xi,nodes );
 
-while norm(res)>1e-6
+while norm(res)>1e-6 && counter<maxcount
 derivs=derivsval('quad4',xi);
 R1r=transpose(derivs(:,1))*nodes(:,1);
 R1s=transpose(derivs(:,2))*nodes(:,1);
@@ -28,14 +30,13 @@ xi=xi+deltaz;
 res=X-LocalToGlobal( xi,nodes );
 
 counter=counter+1;
-if counter>maxcount
-  error('Newton unconverged in 10 iterations');
-end
-
 
 end
 
-
+if counter>=maxcount
+  converged=0;
+  xi=X*inf;
+end
 
 
 end

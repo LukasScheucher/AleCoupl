@@ -11,8 +11,9 @@ f_frame=figure()
 hold on
 axis equal
 axis off
-plotframe(f_frame,1,ele.mbody,nodes.mbody,[0 0 0],1)
+
 plotframe(f_frame,1,ele.sbody,nodes.sbody,[0 0 0],1)
+plotframe(f_frame,1,ele.mbody,nodes.mbody,[1 0 0],1)
 
 f_disp=figure()
 hold on
@@ -46,8 +47,8 @@ geo.slave.disp=P*geo.master.disp
 
 [nodes.mbody,nodes.sbody]=ApplyDisp(nodes,geo,geo.master.disp,geo.slave.disp);
 
-plotframe(f_disp,1,ele.mbody,nodes.mbody,[0 1 0],0);
-plotframe(f_disp,1,ele.sbody,nodes.sbody,[0 1 0],0);
+plotframe(f_disp,1,ele.mbody,nodes.mbody,[0 0.3 0.7],0);
+plotframe(f_disp,1,ele.sbody,nodes.sbody,[0 0.1 0.7],0);
 
 
 

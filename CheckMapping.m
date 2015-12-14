@@ -4,9 +4,9 @@ tol=1e-5;
 
 if distype=='quad4'
     if xi(1)<1.0+tol && xi(1)>-1.0-tol && xi(2)<1.0+tol && xi(2)>-1.0-tol
-        inside=true;
+        inside=1;
     else
-        inside=false;
+        inside=0;
     end
 else
     error('unsupported distype');
