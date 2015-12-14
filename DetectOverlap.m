@@ -1,4 +1,6 @@
-function [overlap_slave,overlap_master] = DetectOverlap(ele,nodes,geo)
+function [overlap_slave,overlap_master,ilagele,ilagnodes] = DetectOverlap(ele,nodes,geo)
+%IMPORTANT the whole algorithm is built upon the assumption, that the
+%master elements are very small and complety enclosed in slave elements
 
 geo.slave.numeletot
 
@@ -7,9 +9,10 @@ overlap_slave(:,1)=1:geo.slave.numeletot;
 
 overlap_master=zeros(geo.master.numeletot,2);
 overlap_master(:,1)=1:geo.master.numeletot;
+lagnodes=[];
 
 
-%% determine the overlap for master elements
+%% determine the overlap for master nodes
 for j=1:geo.master.numeletot
   curele=ele.mbody(j,:)
   curnodes=nodes.mbody(curele,:)
@@ -29,7 +32,8 @@ for j=1:geo.master.numeletot
 end
 
 
-%% determine the overlap for slave elements
+%% determine the overlap for slave nodes
+% INPORTANT this only gives slave nodes mapping directly into a sele
 for j=1:geo.slave.numeletot
   curele=ele.sbody(j,:)
   curnodes=nodes.sbody(curele,:)
@@ -44,7 +48,10 @@ for j=1:geo.slave.numeletot
        overlap_slave(j,2)=k;
      end
   end
-  
 end
+
+ilagele=unique(overlap_master(:,2));
+ilagnodes=unique(ele.sbody(ilagele,:));
+lagnodes=nodes.sbody(ilagnodes,:);
 
 end

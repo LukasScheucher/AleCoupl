@@ -8,7 +8,7 @@ for j=1:geo.master.numeletot
   curnodes=nodes.mbody(curele,:)
   curcenter=sum(curnodes)*0.25;
 
-  counterele =ele.sbody(geo.moverlap(j,2),:);
+  counterele =ele.sbody(geo.mnode2sele(j,2),:);
   counternodes=nodes.sbody(counterele,:)
   countercenter=sum(counternodes)*0.25
   

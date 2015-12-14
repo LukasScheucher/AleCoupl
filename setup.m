@@ -44,6 +44,8 @@ geo.master.numeley=2;
 geo.slave.numeletot=geo.slave.numelex*geo.slave.numeley;
 geo.master.numeletot=geo.master.numelex*geo.master.numeley;
 
+geo.slave.numnodetot=(geo.slave.numelex+1)*(geo.slave.numeley+1);
+geo.master.numnodetot=(geo.master.numelex+1)*(geo.master.numeley+1);
 
 
 geo.master.sizex=(geo.master.xmax-geo.master.xmin)/geo.master.numelex;
