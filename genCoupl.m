@@ -8,43 +8,58 @@ numgp=length(gpw);
 D=zeros(geo.syssize,geo.syssize);
 M=zeros(geo.syssize,geo.syssize);
 
-%loop over all slave elements
+%loop over all lagrange elements
 for j=geo.ilagele'
   cursele=ele.sbody(j,:);
   cursnodes=nodes.sbody(cursele,:);
-  lcurdofs=dofs(cursele,0); %%TODO offest is missing here
-  scurdofs=dofs(cursele,0); %%TODO offest is missing here
+  
+  curlele=ele.sbody(j,:);
+  curlnodes=nodes.sbody(curlele,:);
+  
+  lcurdofs=dofs(cursele,0);
+  scurdofs=dofs(cursele,0);
   
   De=zeros(8,8);
-  for igp=1:numgp
-    xilag  =gpxi(igp,:);
-    xislave=gpxi(igp,:);
-    Nl =sval('quad4',xilag);
-    Ns =sval('quad4',xislave);
-    T=[4 -2  1 -2
-      -2  4 -2  1
-       1 -2  4 -2
-      -2  1 -2  4];
-    Nl=T*Nl;
+  allmele=find(geo.mnode2sele(:,2)==j);
+  for icurmele=allmele' %% loop over all corresponding master elements
     
-    Nlmat=[...
-           Nl(1) 0     Nl(2) 0     Nl(3) 0     Nl(4) 0
-           0     Nl(1) 0     Nl(2) 0     Nl(3) 0     Nl(4)];
-    Nsmat=[...
-           Ns(1) 0     Ns(2) 0     Ns(3) 0     Ns(4) 0
-           0     Ns(1) 0     Ns(2) 0     Ns(3) 0     Ns(4)];
-    jac=Jacobian(cursnodes(:,1:2),xilag);
-    De=De+(inv(jac)*Nlmat)'*inv(jac)*Nsmat*gpw(igp)*det(jac);  
-  end
+    curmele=ele.mbody(icurmele,:);
+    curmnodes=nodes.mbody(curmele,:);
+    mcurdofs=dofs(curmele,0);
   
-  %% Assemble to total systemmatrix
-%   lcurdofs
-%   scurdofs
-%   cursnodes
-%   cursele
-  D(lcurdofs,scurdofs)=D(lcurdofs,scurdofs)+De;
+    for igp=1:numgp
+      
+      ximaster  =gpxi(igp,:);
+      Xglob=LocalToGlobal( ximaster,curmnodes(:,1:2) );
+      [xilag,converged]=GlobalToLocal( Xglob,curlnodes(:,1:2) );
+      
+      if converged==0
+        error('unconverged should not happen here');
+      end
+      
+      
+      Nl =sval('quad4',xilag);
+      Ns =sval('quad4',xilag);
+      T=[4 -2  1 -2
+        -2  4 -2  1
+         1 -2  4 -2
+        -2  1 -2  4];
+      Nl=T*Nl;
 
+      Nlmat=[...
+             Nl(1) 0     Nl(2) 0     Nl(3) 0     Nl(4) 0
+             0     Nl(1) 0     Nl(2) 0     Nl(3) 0     Nl(4)];
+      Nsmat=[...
+             Ns(1) 0     Ns(2) 0     Ns(3) 0     Ns(4) 0
+             0     Ns(1) 0     Ns(2) 0     Ns(3) 0     Ns(4)];
+      jacl=Jacobian(curlnodes(:,1:2),xilag);
+      jacm=Jacobian(curmnodes(:,1:2),ximaster);
+      De=De+Nlmat'*Nsmat*gpw(igp)*det(jacm)*1.33;  %%should be little big bigger
+    end%end gausspoint loop
+  end%end loop over master elements
   
+  %Assemble to total systemmatrix
+  D(lcurdofs,scurdofs)=D(lcurdofs,scurdofs)+De; 
 end
 
 
@@ -63,13 +78,13 @@ for j=geo.ilagele'
   curlnodes=nodes.sbody(curlele,:);
   lcurdofs=dofs(curlele,0);
   
-  allmele=find(geo.mnode2sele(:,2)==j)
+  allmele=find(geo.mnode2sele(:,2)==j);
 
   for icurmele=allmele' %% loop over all corresponding master elements
     
-    curmele=ele.mbody(icurmele,:)
-    curmnodes=nodes.mbody(curmele,:)
-    mcurdofs=dofs(curmele,0)
+    curmele=ele.mbody(icurmele,:);
+    curmnodes=nodes.mbody(curmele,:);
+    mcurdofs=dofs(curmele,0);
   
 
   
@@ -112,7 +127,7 @@ for j=geo.ilagele'
       jacl=Jacobian(curlnodes(:,1:2),xilag);
       jacm=Jacobian(curmnodes(:,1:2),ximaster);
       jacseg=jacl*inv(jacm)
-      Me=Me+(inv(jacl)*Nlmat)'*inv(jacseg)*Nmmat*gpw(igp)*1/det(jacseg);  
+      Me=Me+Nlmat'*Nmmat*gpw(igp)*det(jacm);  
     end%end loop over gausspoints
     M(lcurdofs,mcurdofs)=M(lcurdofs,mcurdofs)+Me;
   end%end loop over corresponding master elements

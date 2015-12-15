@@ -19,7 +19,7 @@ switch lower(distype)
         0.25 * rm * sp];
       
       if xi(1)>1.01 || xi(1)<-1.01 || xi(2)>1.01 || xi(2)<-1.01
-        N=[0 0 0 0]'
+        N=[0 0 0 0]';
       end
   case 'quad9'
       r=xi(1);

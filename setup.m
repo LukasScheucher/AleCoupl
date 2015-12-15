@@ -33,13 +33,14 @@ geo.slave.ymax= 3;
 
 geo.master.xmin=-2;
 geo.master.xmax= 2;
-geo.master.ymin=-1.0;
-geo.master.ymax= 1.0;
+geo.master.ymin=-0.25;
+geo.master.ymax= 0.25;
 
 geo.slave.numelex=4;
 geo.slave.numeley=3;
-geo.master.numelex=6;
-geo.master.numeley=4;
+
+geo.master.numelex=16;
+geo.master.numeley=2;
 
 geo.slave.numeletot=geo.slave.numelex*geo.slave.numeley;
 geo.master.numeletot=geo.master.numelex*geo.master.numeley;
