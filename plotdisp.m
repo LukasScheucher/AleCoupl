@@ -1,4 +1,5 @@
 function p=plotdisp(f,params,elements,nodes,disp)
+%plots the configuration in deformed state
 
 figure(f);
 axis off

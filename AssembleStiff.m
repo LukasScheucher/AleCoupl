@@ -1,6 +1,7 @@
 function stiff = AssembleStiff(params,elements,nodes)
+%iteratively calculates element stiffness matrices and assembles them to
+%the global stiffness matrix
 
-%only elements of reference size are considered here
 [gpxi,gpw] =gaussrulequad();
 numgp=length(gpw);
 numnodes=length(nodes);
@@ -10,11 +11,7 @@ isnode=find(params.ifacenode==1);
 numlagnodes=length(isnode);
 numlagdof  =numlagnodes*2;
 
-
-
 stiff=zeros(numdof+numlagdof,numdof+numlagdof);
-
-
 
 E=params.E;
 v=params.v;
@@ -37,11 +34,13 @@ for iele=1:length(elements)
     curnodes=nodes(curele,:);
     curdofs=dofs(curele);
     
+    %reset element stiffness matrix befor gausspoint loop
     elestiff=zeros(8,8);
     
+    %loop over gausspoints
     for igp=1:numgp
       N =sval('quad4',gpxi(igp,:));
-      Nd =derivsval('quad4',gpxi(igp,:));
+      Nd=derivsval('quad4',gpxi(igp,:));
       
       NMat=[...
             Nd(1,1) 0         Nd(2,1) 0         Nd(3,1) 0         Nd(4,1) 0         
@@ -50,7 +49,10 @@ for iele=1:length(elements)
         
       Xglob=LocalToGlobal( gpxi(igp,:),curnodes );
       
-      alphagp=-1;
+      alphagp=-1;%purposely initializing invalid alpha value
+      
+      %check whether the current element is part of the master-, the slave-
+      %or of no interface at all
       if params.ifaceele(iele)==2
           alphagp=params.alpha(Xglob(2));
       elseif params.ifaceele(iele)==1
@@ -58,27 +60,17 @@ for iele=1:length(elements)
       else
            alphagp=1.0;
       end
+      
       if abs(alphagp)>1
-          iele
-          Xglob(2)
-          alphagp
-          params.ifaceele(iele)
           error('invalid alpha value detected');
       end
-              
-        
+      
+      %assemble elementstiffness matrix gausspoint wise
       elestiff=elestiff+NMat'*C*NMat*gpw(igp);
        
-    end
+    end%end gausspoint loop
     
-%     curele
-%     curnodes
-%     curdofs
-    stiff(curdofs,curdofs)=stiff(curdofs,curdofs)+elestiff;
-
-    
-end
-
-
+    stiff(curdofs,curdofs)=stiff(curdofs,curdofs)+elestiff;    
+end%end loop over elements
 
 end

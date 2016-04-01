@@ -1,7 +1,7 @@
 function []=plotQUAD4indices(f,elenodes,nodeindices,eleindex)
+%plots the node indices of a quad4 element to the specified node positions
 
 figure(f);
-
 
 p=text(elenodes(1,1),elenodes(1,2),elenodes(1,3),num2str(nodeindices(1)));
 set(p,'Color',[1 0 0]);

@@ -1,5 +1,6 @@
 function inside=CheckMapping(distype,xi)
-
+%check whether the reference coordinates xi refer to a point
+%that is inside the element
 tol=1e-5;
 
 if distype=='quad4'
@@ -11,6 +12,5 @@ if distype=='quad4'
 else
     error('unsupported distype');
 end
-
 
 end

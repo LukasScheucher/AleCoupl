@@ -1,4 +1,5 @@
 function p=plotframe(f,params,elements,nodes,color,plotindices)
+%plots the configuration in undeformed state
 
 figure(f);
 axis off

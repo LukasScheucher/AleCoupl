@@ -1,4 +1,5 @@
 function [gpxi,gpw] =gaussruleline(n)
+%provides gauss integartion locations and weights for line elements
 if n==2
     gpxi=[-1/sqrt(3) 1/sqrt(3)];
     gpw=[1 1];

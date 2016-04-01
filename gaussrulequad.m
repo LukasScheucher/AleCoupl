@@ -1,6 +1,5 @@
 function [gpxi,gpw] =gaussrulequad()
-
-
+%provides gauss integartion locations and weights for a quad4 element
 gpxi=[];
 gpw=[];
 [gpxil,gpwl]=gaussruleline(4);

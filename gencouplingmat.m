@@ -1,6 +1,6 @@
 function [Cg]=gencouplingmat(params,nodes,lagele,counterele,modlag,modcounter,dual,valids,validm)
+%description follows
 
-   
     TOL=1e-12;
     
     nodeslag=nodes(lagele,:);

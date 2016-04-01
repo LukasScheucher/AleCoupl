@@ -1,4 +1,5 @@
 function [D,M]=genCoupl(geo,ele,nodes)
+%generates the mortar coupling matrices
 
 TOL=1e-8;
 

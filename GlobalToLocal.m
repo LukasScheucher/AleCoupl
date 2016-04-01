@@ -1,6 +1,6 @@
 function [ xi,converged ] = GlobalToLocal( X,nodes )
-% xi: local coordinate
-% converged: 1->success else failure
+% matches the global X coordinate to a local xi coordinate given the
+% element node coordinates for a quad4 element
 
 counter=0;
 maxcount=60;

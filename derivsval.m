@@ -1,4 +1,5 @@
 function Nd =derivsval(distype,xi)
+%first derivatives of shape functions
 
 Nd=[];
 

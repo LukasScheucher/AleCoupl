@@ -1,9 +1,5 @@
 function []=plotQUAD4(f,elenodes,numpoints,color,linestyle,linewidth)
-
-
-
-
-% 
+%si9mple plotting function for a quad4 element
 % 
 %     o_______________(3)_______________o
 %     |                                 |
@@ -25,15 +21,6 @@ function []=plotQUAD4(f,elenodes,numpoints,color,linestyle,linewidth)
 % 
 % 
 % 
-
-
-
-
-
-
-
-
-
 r=[];
 s=[];
 
