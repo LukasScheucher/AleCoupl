@@ -1,4 +1,4 @@
-gitn function N =sval(distype,xi)
+function N =sval(distype,xi)
 % evaluates shapefunction at certain positions
 % currentl just for undistorted elements
 % distype={'tet10','hex27'}
